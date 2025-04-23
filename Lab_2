@@ -1,0 +1,92 @@
+Write a Program to implement Uninformed Search Technique: Breadth First Search.
+
+This code is doing in Google colab where data set is fetch_california_housing(). 
+
+
+from sklearn.datasets import fetch_california_housing
+import pandas as pd
+import networkx as nx
+import numpy as np
+data = fetch_california_housing()
+df = pd.DataFrame(data.data, columns=data.feature_names)
+df['Price'] = data.target
+
+df.head()
+
+import random
+df = df.sample(n=1000, random_state=42).reset_index(drop=True)
+print(f"Reduced dataset size: {df.shape[0]} houses")
+
+
+
+G = nx.Graph()
+
+for i in range(len(df)):
+    G.add_node(i, price=df.loc[i, 'Price'], lat=df.loc[i, 'Latitude'], lon=df.loc[i,
+'Longitude'])
+threshold = 0.05
+G = nx.Graph()
+
+for i in range(len(df)):
+    G.add_node(i, price=df.loc[i, 'Price'], lat=df.loc[i, 'Latitude'], lon=df.loc[i, 'Longitude'])
+threshold = 0.05
+for i in range(len(df)):
+    for j in range(i + 1, len(df)):
+        if abs(df.loc[i, 'Latitude'] - df.loc[j, 'Latitude']) < threshold and \
+           abs(df.loc[i, 'Longitude'] - df.loc[j, 'Longitude']) < threshold:
+            G.add_edge(i, j)
+
+print(f"Number of nodes: {G.number_of_nodes()}")
+print(f"Number of edges: {G.number_of_edges()}")
+
+print(f"Number of nodes: {G.number_of_nodes()}")
+print(f"Number of edges: {G.number_of_edges()}")
+
+
+
+from collections import deque
+
+def bfs_search(graph, start_node, max_price):
+    """ BFS to find the best house within max_price """
+    visited = set()
+    queue = deque([start_node])
+
+    while queue:
+        node = queue.popleft()
+
+        if node in visited:
+            continue
+        visited.add(node)
+
+        house_price = graph.nodes[node]['price']
+        if house_price <= max_price:
+            return node, house_price
+
+        for neighbor in graph.neighbors(node):
+            if neighbor not in visited:
+                queue.append(neighbor)
+
+    return None
+
+start_house = 0
+max_budget = 2.0
+
+result = bfs_search(G, start_house, max_budget)
+if result:
+    print(f"House found: ID {result[0]} with Price {result[1]}")
+else:
+    print("No suitable house found")
+
+
+
+
+import matplotlib.pyplot as plt
+
+plt.figure(figsize=(10, 6))
+pos = {i: (df.loc[i, 'Longitude'], df.loc[i, 'Latitude']) for i in range(len(df))}
+nx.draw(G, pos, node_size=10, alpha=0.6, edge_color="gray")
+plt.xlabel("Longitude")
+plt.ylabel("Latitude")
+plt.title("California Housing BFS Graph")
+plt.show()
+
