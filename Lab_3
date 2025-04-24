@@ -1,5 +1,7 @@
  Write a Program to implement Uninformed Search Technique: Depth First Search. 
 
+This code is doing in Google colab where data set is fetch_california_housing(). 
+
 
 
 from sklearn.datasets import fetch_california_housing
